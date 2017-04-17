@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CircularLayoutManager">
+        <attr name="clm_numDisplayChildren" format="integer"/>
+        <attr name="clm_startAngle" format="float"/>
+        <attr name="clm_sweepAngle" format="float"/>
+        <attr name="clm_layoutCenterX" format="float|fraction|dimension"/>
+        <attr name="clm_layoutCenterY" format="float|fraction|dimension"/>
+        <attr name="clm_layoutRadius" format="float|fraction|dimension"/>
+    </declare-styleable>
+
+</resources>
