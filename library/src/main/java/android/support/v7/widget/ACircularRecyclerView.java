@@ -341,5 +341,4 @@ public abstract class ACircularRecyclerView extends ARecyclerView {
             }
         }
     }
-
 }
