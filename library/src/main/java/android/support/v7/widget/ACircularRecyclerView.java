@@ -112,9 +112,13 @@ public abstract class ACircularRecyclerView extends ARecyclerView {
 
                 // forge linear motion into angular motion
                 final MotionEvent vtev = MotionEvent.obtain(event);
-                vtev.setLocation(0, mVtev.getY() + layout.getLayoutRadius() * dTheta);
+                if (mVtev != null) {
+                    vtev.setLocation(0, mVtev.getY() + layout.getLayoutRadius() * dTheta);
+                    mVtev.recycle();
+                } else {
+                    vtev.setLocation(0, event.getY() + layout.getLayoutRadius() * dTheta);
+                }
                 tracker.addMovement(vtev);
-                mVtev.recycle();
                 mVtev = vtev;
 
                 mLastTouchTheta = theta;
