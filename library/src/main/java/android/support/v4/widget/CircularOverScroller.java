@@ -7,10 +7,6 @@ import android.view.ViewConfiguration;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 
-/**
- * Created by Palatis on 2017/4/17.
- */
-
 public class CircularOverScroller {
     private int mMode;
 

@@ -13,10 +13,6 @@ import android.view.VelocityTracker;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-/**
- * Created by Palatis on 2017/4/13.
- */
-
 public abstract class ACircularRecyclerView extends ARecyclerView {
     private static final String TAG = "ACircularRecyclerView";
 

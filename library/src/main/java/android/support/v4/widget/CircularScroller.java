@@ -3,10 +3,6 @@ package android.support.v4.widget;
 import android.content.Context;
 import android.view.animation.Interpolator;
 
-/**
- * Created by Palatis on 2017/4/17.
- */
-
 public class CircularScroller {
     CircularOverScroller mScroller;
 

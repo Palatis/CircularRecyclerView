@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import tw.idv.palatis.crv.R;
-import tw.idv.palatis.crv.utils.RadianUtils;
 
 public class CircularLayoutManager extends RecyclerView.LayoutManager implements
         RecyclerView.SmoothScroller.ScrollVectorProvider {
@@ -56,8 +55,8 @@ public class CircularLayoutManager extends RecyclerView.LayoutManager implements
                 mTypedValue_Radius.type = TypedValue.TYPE_FLOAT;
                 mTypedValue_Radius.data = Float.floatToRawIntBits(0.5f);
             }
-            mThetaStart = RadianUtils.radianFromDegree(a.getFloat(R.styleable.CircularLayoutManager_clm_startAngle, 0f));
-            mThetaSweep = RadianUtils.radianFromDegree(a.getFloat(R.styleable.CircularLayoutManager_clm_sweepAngle, 360f));
+            mThetaStart = (float) Math.toRadians(a.getFloat(R.styleable.CircularLayoutManager_clm_startAngle, 0f));
+            mThetaSweep = (float) Math.toRadians(a.getFloat(R.styleable.CircularLayoutManager_clm_sweepAngle, 360f));
             mNumDisplayChildren = a.getInteger(R.styleable.CircularLayoutManager_clm_numDisplayChildren, 8);
         } finally {
             a.recycle();
