@@ -43,14 +43,6 @@ public class CircularLayoutManager extends RecyclerView.LayoutManager implements
     public CircularLayoutManager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         final TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.CircularLayoutManager, defStyleAttr, defStyleRes);
         try {
-            if (!a.getValue(R.styleable.CircularLayoutManager_clm_layoutCenterX, mTypedValue_CenterX)) {
-                mTypedValue_CenterX.type = TypedValue.TYPE_FLOAT;
-                mTypedValue_CenterX.data = Float.floatToRawIntBits(0.5f);
-            }
-            if (!a.getValue(R.styleable.CircularLayoutManager_clm_layoutCenterY, mTypedValue_CenterY)) {
-                mTypedValue_CenterY.type = TypedValue.TYPE_FLOAT;
-                mTypedValue_CenterY.data = Float.floatToRawIntBits(0.5f);
-            }
             if (!a.getValue(R.styleable.CircularLayoutManager_clm_layoutRadius, mTypedValue_Radius)) {
                 mTypedValue_Radius.type = TypedValue.TYPE_FLOAT;
                 mTypedValue_Radius.data = Float.floatToRawIntBits(0.5f);
@@ -65,48 +57,15 @@ public class CircularLayoutManager extends RecyclerView.LayoutManager implements
         updateRanges();
     }
 
-    private boolean mIsMeasured = false;
-
     @Override
     public void onMeasure(RecyclerView.Recycler recycler, RecyclerView.State state, int widthSpec, int heightSpec) {
         super.onMeasure(recycler, state, widthSpec, heightSpec);
 
         final int widthSize = View.MeasureSpec.getSize(widthSpec);
         final int heightSize = View.MeasureSpec.getSize(heightSpec);
+        final float r;
 
         final DisplayMetrics metrics = mRecyclerView.getResources().getDisplayMetrics();
-
-        final float cx, cy, r;
-        switch (mTypedValue_CenterX.type) {
-            case TypedValue.TYPE_FLOAT:
-                cx = widthSize * mTypedValue_CenterX.getFloat();
-                break;
-            case TypedValue.TYPE_FRACTION:
-                cx = mTypedValue_CenterX.getFraction(widthSize, 1);
-                break;
-            case TypedValue.TYPE_DIMENSION:
-                cx = mTypedValue_CenterX.getDimension(metrics);
-                break;
-            default:
-                cx = widthSize * 0.5f;
-                Log.d(TAG, "problem resolving center X");
-        }
-
-        switch (mTypedValue_CenterY.type) {
-            case TypedValue.TYPE_FLOAT:
-                cy = heightSize * mTypedValue_CenterY.getFloat();
-                break;
-            case TypedValue.TYPE_FRACTION:
-                cy = mTypedValue_CenterY.getFraction(heightSize, 1);
-                break;
-            case TypedValue.TYPE_DIMENSION:
-                cy = mTypedValue_CenterY.getDimension(metrics);
-                break;
-            default:
-                cy = heightSize * 0.5f;
-                Log.d(TAG, "problem resolving center Y");
-        }
-
         switch (mTypedValue_Radius.type) {
             case TypedValue.TYPE_FLOAT:
                 r = Math.min(widthSize, heightSize) * mTypedValue_Radius.getFloat();
@@ -121,6 +80,8 @@ public class CircularLayoutManager extends RecyclerView.LayoutManager implements
                 r = Math.min(widthSize, heightSize) * 0.5f;
                 Log.d(TAG, "problem resolving radius.");
         }
+        final float cx = widthSize / 2;
+        final float cy = heightSize / 2;
 
         if (cx != mLayoutCenterX || cy != mLayoutCenterY || r != mLayoutRadius) {
             mLayoutCenterX = cx;
