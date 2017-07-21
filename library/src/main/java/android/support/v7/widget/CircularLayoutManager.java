@@ -34,9 +34,6 @@ public class CircularLayoutManager extends RecyclerView.LayoutManager implements
     private float mLayoutCenterY = 0;
     private float mLayoutRadius;
 
-    private final TypedValue mTypedValue_CenterX = new TypedValue();
-    private final TypedValue mTypedValue_CenterY = new TypedValue();
-    private final TypedValue mTypedValue_Radius = new TypedValue();
     private int mNumDisplayChildren;
 
     public CircularLayoutManager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
