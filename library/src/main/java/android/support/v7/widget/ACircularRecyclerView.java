@@ -60,7 +60,6 @@ public abstract class ACircularRecyclerView extends ARecyclerView {
             layout.scrollCircularlyBy(dTheta, mRecycler, mState);
     }
 
-    private float mInitialTouchTheta;
     private float mLastTouchTheta;
     private MotionEvent mVtev;
 
@@ -89,7 +88,7 @@ public abstract class ACircularRecyclerView extends ARecyclerView {
         switch (action) {
             case MotionEvent.ACTION_DOWN: {
                 _setScrollPointerId(event.getPointerId(0));
-                mInitialTouchTheta = mLastTouchTheta = (float) Math.atan2(-event.getY() + layoutCenterY, event.getX() - layoutCenterX);
+                mLastTouchTheta = (float) Math.atan2(-event.getY() + layoutCenterY, event.getX() - layoutCenterX);
                 mVtev = MotionEvent.obtain(event);
                 mVtev.setLocation(0, 0);
                 tracker.addMovement(mVtev);
