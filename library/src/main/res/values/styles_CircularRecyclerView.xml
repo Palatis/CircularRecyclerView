@@ -5,7 +5,6 @@
         <attr name="clm_numDisplayChildren" format="integer"/>
         <attr name="clm_startAngle" format="float"/>
         <attr name="clm_sweepAngle" format="float"/>
-        <attr name="clm_layoutRadius" format="float|fraction|dimension"/>
     </declare-styleable>
 
 </resources>

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.PointF;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -43,10 +42,6 @@ public class CircularLayoutManager extends RecyclerView.LayoutManager implements
     public CircularLayoutManager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         final TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.CircularLayoutManager, defStyleAttr, defStyleRes);
         try {
-            if (!a.getValue(R.styleable.CircularLayoutManager_clm_layoutRadius, mTypedValue_Radius)) {
-                mTypedValue_Radius.type = TypedValue.TYPE_FLOAT;
-                mTypedValue_Radius.data = Float.floatToRawIntBits(0.5f);
-            }
             mThetaStart = (float) Math.toRadians(a.getFloat(R.styleable.CircularLayoutManager_clm_startAngle, 0f));
             mThetaSweep = (float) Math.toRadians(a.getFloat(R.styleable.CircularLayoutManager_clm_sweepAngle, 360f));
             mNumDisplayChildren = a.getInteger(R.styleable.CircularLayoutManager_clm_numDisplayChildren, 8);
@@ -63,25 +58,10 @@ public class CircularLayoutManager extends RecyclerView.LayoutManager implements
 
         final int widthSize = View.MeasureSpec.getSize(widthSpec);
         final int heightSize = View.MeasureSpec.getSize(heightSpec);
-        final float r;
 
-        final DisplayMetrics metrics = mRecyclerView.getResources().getDisplayMetrics();
-        switch (mTypedValue_Radius.type) {
-            case TypedValue.TYPE_FLOAT:
-                r = Math.min(widthSize, heightSize) * mTypedValue_Radius.getFloat();
-                break;
-            case TypedValue.TYPE_FRACTION:
-                r = mTypedValue_Radius.getFraction(Math.min(widthSize, heightSize), 1);
-                break;
-            case TypedValue.TYPE_DIMENSION:
-                r = mTypedValue_Radius.getDimension(metrics);
-                break;
-            default:
-                r = Math.min(widthSize, heightSize) * 0.5f;
-                Log.d(TAG, "problem resolving radius.");
-        }
         final float cx = widthSize / 2;
         final float cy = heightSize / 2;
+        final float r = Math.min(cx, cy) - Math.max(Math.max(getPaddingLeft(), getPaddingRight()), Math.max(getPaddingTop(), getPaddingBottom()));
 
         if (cx != mLayoutCenterX || cy != mLayoutCenterY || r != mLayoutRadius) {
             mLayoutCenterX = cx;
