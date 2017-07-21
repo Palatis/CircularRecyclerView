@@ -5,7 +5,6 @@ import android.content.res.TypedArray;
 import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -35,12 +34,14 @@ public class CircularLayoutManager extends RecyclerView.LayoutManager implements
     private float mLayoutRadius;
 
     private int mNumDisplayChildren;
+    private int mNumSkipChildren;
 
     public CircularLayoutManager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         final TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.CircularLayoutManager, defStyleAttr, defStyleRes);
         try {
             mThetaStart = (float) Math.toRadians(a.getFloat(R.styleable.CircularLayoutManager_clm_startAngle, 0f));
             mThetaSweep = (float) Math.toRadians(a.getFloat(R.styleable.CircularLayoutManager_clm_sweepAngle, 360f));
+            mNumSkipChildren = a.getInteger(R.styleable.CircularLayoutManager_clm_numSkipChildren, 0);
             mNumDisplayChildren = a.getInteger(R.styleable.CircularLayoutManager_clm_numDisplayChildren, 8);
         } finally {
             a.recycle();
@@ -72,12 +73,25 @@ public class CircularLayoutManager extends RecyclerView.LayoutManager implements
         if (children < 2)
             Log.d(TAG, "setNumDisplayChildren(): children < 2, you'll probably get strange behavior.");
 
-        mNumDisplayChildren = children;
-        updateRanges();
+        if (children != mNumDisplayChildren) {
+            mNumDisplayChildren = children;
+            updateRanges();
+        }
     }
 
     public int getNumDisplayChildren() {
         return mNumDisplayChildren;
+    }
+
+    public void setNumSkipChildren(int children) {
+        if (children != mNumSkipChildren) {
+            mNumSkipChildren = children;
+            updateRanges();
+        }
+    }
+
+    public int getNumSkipChildren() {
+        return mNumSkipChildren;
     }
 
     /**
@@ -85,19 +99,11 @@ public class CircularLayoutManager extends RecyclerView.LayoutManager implements
      * @param thetaSweep the sweeping angle of the arc
      */
     public void setLayoutRange(float thetaStart, float thetaSweep) {
-        mThetaStart = thetaStart;
-        mThetaSweep = thetaSweep;
-
-        updateRanges();
-    }
-
-    public void setLayoutCenter(float x, float y) {
-        mLayoutCenterX = x;
-        mLayoutCenterY = y;
-    }
-
-    public void setLayoutRadius(float radius) {
-        mLayoutRadius = radius;
+        if (mThetaStart != thetaStart || mThetaSweep != thetaSweep) {
+            mThetaStart = thetaStart;
+            mThetaSweep = thetaSweep;
+            updateRanges();
+        }
     }
 
     @Override
@@ -132,7 +138,7 @@ public class CircularLayoutManager extends RecyclerView.LayoutManager implements
             ratio = 0;
         mItemTheta = mThetaSweep;
 
-        final int itemCount = getItemCount();
+        final int itemCount = getItemCount() + mNumSkipChildren;
         if (itemCount == 0)
             return;
 
@@ -140,7 +146,7 @@ public class CircularLayoutManager extends RecyclerView.LayoutManager implements
             mItemTheta /= Math.min(itemCount, mNumDisplayChildren);
 
         float absItemTheta = Math.abs(mItemTheta);
-        mCircularRange = absItemTheta * getItemCount();
+        mCircularRange = absItemTheta * itemCount;
         mCircularOffset = ratio * absItemTheta;
         if (mCircularOffset > mCircularRange - absItemTheta)
             mCircularOffset = mCircularRange - absItemTheta;
@@ -173,16 +179,8 @@ public class CircularLayoutManager extends RecyclerView.LayoutManager implements
         return mLayoutRadius;
     }
 
-    private static class LayoutParams extends RecyclerView.LayoutParams {
-//        float mTheta;
-
-        LayoutParams(int width, int height) {
-            super(width, height);
-        }
-    }
-
     public RecyclerView.LayoutParams generateDefaultLayoutParams() {
-        return new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        return new RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
     private RecyclerView mRecyclerView;
@@ -208,15 +206,18 @@ public class CircularLayoutManager extends RecyclerView.LayoutManager implements
             return;
 
         if (mThetaSweep < 0) {
-
+            throw new UnsupportedOperationException("sweep < 0 not implemented.");
         } else if (mThetaSweep > 0) {
             final int startIndex = (int) (mCircularOffset / mItemTheta);
             final float compensation = mCircularOffset - startIndex * mItemTheta;
-            int endIndex = startIndex + Math.min(state.getItemCount(), mNumDisplayChildren) + (compensation != 0 ? 1 : 0);
-            if (endIndex >= state.getItemCount())
-                endIndex = state.getItemCount();
-            for (int index = startIndex; index < endIndex; ++index) {
-                final float theta = mThetaStart - compensation + (index - startIndex + 0.5f) * mItemTheta;
+            // lay one more child if we have to compensate
+            final int count = mNumDisplayChildren + (compensation != 0 ? 1 : 0);
+            for (int i = mNumSkipChildren; i < count; ++i) {
+                final int childIndex = startIndex + i - mNumSkipChildren;
+                if (childIndex >= state.getItemCount())
+                    break;
+
+                final float theta = mThetaStart - compensation + i * mItemTheta;
                 final float childStartAngle = theta - mItemTheta / 2.0f;
                 final float childEndAngle = theta + mItemTheta / 2.0f;
 
@@ -231,7 +232,7 @@ public class CircularLayoutManager extends RecyclerView.LayoutManager implements
                 else if (childOffset > 1.0f)
                     childOffset = 1.0f;
 
-                final View child = recycler.getViewForPosition(index);
+                final View child = recycler.getViewForPosition(childIndex);
                 addView(child);
                 final RecyclerView.ViewHolder holder = mRecyclerView.getChildViewHolder(child);
                 if (holder instanceof ViewHolder)
@@ -301,7 +302,7 @@ public class CircularLayoutManager extends RecyclerView.LayoutManager implements
     }
 
     public boolean canScrollCircularly() {
-        return getItemCount() > mNumDisplayChildren;
+        return getItemCount() > mNumDisplayChildren - mNumSkipChildren;
     }
 
     /**
@@ -325,10 +326,9 @@ public class CircularLayoutManager extends RecyclerView.LayoutManager implements
     }
 
     public float computeCircularScrollExtent(RecyclerView.State state) {
-        if (getChildCount() == 0)
-            return 0;
-
-        return mNumDisplayChildren * mItemTheta;
+        return getChildCount() == 0 ?
+                0 :
+                (mNumDisplayChildren - mNumSkipChildren) * mItemTheta;
     }
 
     public float computeCircularScrollOffset(RecyclerView.State state) {

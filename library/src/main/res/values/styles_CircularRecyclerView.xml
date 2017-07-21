@@ -2,9 +2,10 @@
 <resources>
 
     <declare-styleable name="CircularLayoutManager">
-        <attr name="clm_numDisplayChildren" format="integer"/>
-        <attr name="clm_startAngle" format="float"/>
-        <attr name="clm_sweepAngle" format="float"/>
+        <attr name="clm_numSkipChildren" format="integer" />
+        <attr name="clm_numDisplayChildren" format="integer" />
+        <attr name="clm_startAngle" format="float" />
+        <attr name="clm_sweepAngle" format="float" />
     </declare-styleable>
 
 </resources>
