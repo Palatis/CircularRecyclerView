@@ -332,17 +332,15 @@ public class CircularLayoutManager extends RecyclerView.LayoutManager implements
     }
 
     public float computeCircularScrollOffset(RecyclerView.State state) {
-        if (getChildCount() == 0)
-            return 0;
-
-        return mCircularOffset;
+        return getChildCount() == 0 ?
+                0 :
+                mCircularOffset;
     }
 
     public float computeCircularScrollRange(RecyclerView.State state) {
-        if (getChildCount() == 0)
-            return 0;
-
-        return mCircularRange;
+        return getChildCount() == 0 ?
+                0 :
+                mCircularRange;
     }
 
     @Override
