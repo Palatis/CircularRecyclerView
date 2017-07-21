@@ -249,11 +249,14 @@ public class CircularLayoutManager extends RecyclerView.LayoutManager implements
     }
 
     public void layoutCircular(View child, final float theta) {
-        final float childCenterX = (float) (mLayoutCenterX + Math.cos(theta) * mLayoutRadius);
-        final float childCenterY = (float) (mLayoutCenterY - Math.sin(theta) * mLayoutRadius);
-        final int left = (int) (childCenterX - child.getMeasuredWidth() / 2);
-        final int top = (int) (childCenterY - child.getMeasuredHeight() / 2);
-        child.layout(left, top, left + child.getMeasuredWidth(), top + child.getMeasuredHeight());
+        final int childWidth = child.getMeasuredWidth();
+        final int childHeight = child.getMeasuredHeight();
+        final float childRadius = Math.min(childWidth, childHeight) / 2.0f;
+        final float childCenterX = (float) (mLayoutCenterX + Math.cos(theta) * (mLayoutRadius - childRadius));
+        final float childCenterY = (float) (mLayoutCenterY - Math.sin(theta) * (mLayoutRadius - childRadius));
+        final int left = (int) (childCenterX - childWidth / 2);
+        final int top = (int) (childCenterY - childHeight / 2);
+        child.layout(left, top, left + childWidth, top + childHeight);
     }
 
     public static abstract class ViewHolder extends RecyclerView.ViewHolder {
