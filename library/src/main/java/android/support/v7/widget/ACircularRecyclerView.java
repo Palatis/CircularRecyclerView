@@ -50,7 +50,7 @@ public abstract class ACircularRecyclerView extends ARecyclerView {
     public void scrollBy(float dTheta) {
         final CircularLayoutManager layout = getCircularLayoutManager();
         if (layout == null) {
-            Log.e(TAG, "Cannot scroll without a LayoutManager set. Call setLayoutManager with a non-null argument.");
+            Log.e(TAG, "Cannot scroll without a CircularLayoutManager set. Call setLayoutManager with a non-null argument.");
             return;
         }
         if (isLayoutFrozen()) {

@@ -285,7 +285,6 @@ public class CircularLayoutManager extends RecyclerView.LayoutManager implements
 
         if (mCircularOffset != offset) {
             mCircularOffset = offset;
-            Log.d(TAG, "scrollCircularlyBy(): dTheta = " + dTheta);
             requestLayout();
         }
         return dTheta;
